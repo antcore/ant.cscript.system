@@ -24,6 +24,19 @@ namespace ant.csscript.editor.handlefiles
             InitializeComponent();
         }
 
+        /// <summary>
+        /// 设置脚本编辑器 代码
+        /// </summary>
+        /// <param name="ScriptCode"></param>
+        public void SetScirptCode(string ScriptCode = "")
+        {
+            //初始化脚本编辑及运行类
+            if (null == HandleFileCsScript)
+                HandleFileCsScript = new CsScriptHandleFile(GetPathPluginsCsScriptDependencyDll, DependencySystemDlls);
+            if (string.IsNullOrEmpty(ScriptCode))
+                ScriptCode = GetInitCode;
+            antCsScriptEditor.InitScriptCode(ScriptCode);
+        }
         #region 脚本编辑器相关
         public string GetRootPath
         {
@@ -136,22 +149,11 @@ namespace CsScript
         }
 
         #endregion
-
-        /// <summary>
-        /// 设置脚本编辑器 代码
-        /// </summary>
-        /// <param name="ScriptCode"></param>
-        public void SetScirptCode(string ScriptCode = "")
-        {
-            //初始化脚本编辑及运行类
-            if (null == HandleFileCsScript)
-                HandleFileCsScript = new CsScriptHandleFile(GetPathPluginsCsScriptDependencyDll, DependencySystemDlls);
-            if (string.IsNullOrEmpty(ScriptCode))
-                ScriptCode = GetInitCode;
-            antCsScriptEditor.InitScriptCode(ScriptCode);
-        }
+        
         private void MainForm_Load(object sender, EventArgs e)
         {
+            splitContainer2.FixedPanel = FixedPanel.Panel2;
+
             InitAntCsScriptEditor();
 
             SetScirptCode();
@@ -173,8 +175,8 @@ namespace CsScript
         private void showMessage(string message, Color color)
         {
             richTextBoxMessage.Clear();
-            richTextBoxMessage.Text = message;
-            richTextBoxMessage.SelectionColor = color;    //设置SelectionColor属性实现控件中的文本颜色为红色
+            richTextBoxMessage.SelectionColor = color;
+            richTextBoxMessage.AppendText(message); 
             richTextBoxMessage.ScrollToCaret();
         }
 

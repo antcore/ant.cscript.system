@@ -79,6 +79,7 @@
             // 
             // richTextBoxMessage
             // 
+            this.richTextBoxMessage.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.richTextBoxMessage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.richTextBoxMessage.Location = new System.Drawing.Point(3, 3);
             this.richTextBoxMessage.Name = "richTextBoxMessage";
@@ -99,6 +100,7 @@
             // 
             // richTextBoxFileText
             // 
+            this.richTextBoxFileText.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.richTextBoxFileText.Dock = System.Windows.Forms.DockStyle.Fill;
             this.richTextBoxFileText.Location = new System.Drawing.Point(3, 3);
             this.richTextBoxFileText.Name = "richTextBoxFileText";
