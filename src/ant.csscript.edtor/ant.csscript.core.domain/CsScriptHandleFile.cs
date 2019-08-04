@@ -151,7 +151,7 @@ namespace ant.csscript.core.domain
             return CompilerFalg;
         }
 
-        public ScriptResults<SampleData> RunFromCsCodeCompilerHandleFile(Guid CsScriptGuid, string FilePathHandle, string FilePathSource, ref string RunMessage)
+        public ScriptResults<SampleData> RunFromCsCodeCompilerHandleFile(Guid CsScriptGuid, string FilePathHandle, string FilePathSource, ref string RunMessage, ref string RunLog)
         {
             //if (!StaticInfo.ScriptInfoCompilerResults.ContainsKey(CsScriptGuid))
             //{
@@ -197,6 +197,12 @@ namespace ant.csscript.core.domain
                     try
                     {
                         iCsScript.Run();
+
+                        //用于调试
+                        //输出脚本执行日志
+                        if (iCsScript.RunLog.Length>0)
+                            RunLog = iCsScript.RunLog.ToString();
+
                         RunMessage = string.Empty;
                         return iCsScript.ResultData;
                     }

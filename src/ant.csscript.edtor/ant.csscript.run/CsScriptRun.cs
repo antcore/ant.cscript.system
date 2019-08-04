@@ -54,6 +54,7 @@ namespace ant.csscript.run
         string CsScriptCode = string.Empty;
         string CompilerMessage = string.Empty;
         string RunMessage = string.Empty;
+        string RunLogMessage = string.Empty;
         CsScriptHandleFile HandleFileCsScript = null;
         public void RunScript(Guid CsScriptGuid, string CsScriptCode, string filePath)
         {
@@ -75,7 +76,8 @@ namespace ant.csscript.run
             FilePathHandle = FilePathSource = filePath;
 
             RunMessage = string.Empty;
-            var result = HandleFileCsScript.RunFromCsCodeCompilerHandleFile(CsScriptGuid, FilePathHandle, FilePathSource, ref RunMessage);
+            RunLogMessage = string.Empty;
+            var result = HandleFileCsScript.RunFromCsCodeCompilerHandleFile(CsScriptGuid, FilePathHandle, FilePathSource, ref RunMessage,ref RunLogMessage);
             if (null == result)
             {
                 Console.WriteLine(RunMessage);
@@ -102,6 +104,15 @@ namespace ant.csscript.run
             sbInfo.AppendLine("");
             sbInfo.AppendLine(" ********** 【脚本已成功运行】 ********** ");
             sbInfo.AppendLine(" --------------------------------------- ");
+
+            if (RunLogMessage.Length>0)
+            {
+                sbInfo.AppendLine(" --------------------------------------- ");
+                sbInfo.AppendLine(" *********** 【脚本运行日志】 *********** ");
+                sbInfo.AppendLine(" --------------------------------------- ");
+                sbInfo.AppendLine(RunLogMessage);
+            }
+
             Console.WriteLine(sbInfo.ToString());
         }
 

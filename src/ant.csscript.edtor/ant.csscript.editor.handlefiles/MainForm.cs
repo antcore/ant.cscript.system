@@ -184,6 +184,7 @@ namespace CsScript
         string CsScriptCode = string.Empty;
         string CompilerMessage = string.Empty;
         string RunMessage = string.Empty;
+        string RunLogMessage = string.Empty;
         CsScriptHandleFile HandleFileCsScript = null;
         /// <summary>
         /// 编译脚本
@@ -211,7 +212,8 @@ namespace CsScript
             FilePathHandle = FilePathSource = filePathSelect;
 
             RunMessage = string.Empty;
-            var result = HandleFileCsScript.RunFromCsCodeCompilerHandleFile(CsScriptGuid, FilePathHandle, FilePathSource, ref RunMessage);
+            RunLogMessage = string.Empty;
+            var result = HandleFileCsScript.RunFromCsCodeCompilerHandleFile(CsScriptGuid, FilePathHandle, FilePathSource, ref RunMessage, ref RunLogMessage);
             if (null == result)
             {
                 showMessage(RunMessage, Color.Red);
@@ -241,6 +243,15 @@ namespace CsScript
             sbInfo.AppendLine("");
             sbInfo.AppendLine(" ********** 【脚本已成功运行】 ********** ");
             sbInfo.AppendLine(" --------------------------------------- ");
+
+            if (RunLogMessage.Length > 0)
+            {
+                sbInfo.AppendLine(" --------------------------------------- ");
+                sbInfo.AppendLine(" *********** 【脚本运行日志】 *********** ");
+                sbInfo.AppendLine(" --------------------------------------- ");
+                sbInfo.AppendLine(RunLogMessage);
+            }
+
             showMessage(sbInfo.ToString(), Color.Black);
         }
 
