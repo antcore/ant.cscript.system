@@ -4,16 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DDA12412-EAEE-48A2-B30A-97A872F59F8D}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ant.csscript.core</RootNamespace>
-    <AssemblyName>ant.csscript.core</AssemblyName>
+    <ProjectGuid>{01A961B0-9200-43E9-839A-34F5B688DBE3}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>ant.csscript.run</RootNamespace>
+    <AssemblyName>AntCsScriptRun</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -33,32 +34,42 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Topshelf, Version=3.3.154.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Topshelf.3.3.1\lib\net40-full\Topshelf.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CsScriptHandleFileTest.cs" />
+    <Compile Include="CsScriptRun.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ScriptRunFunc\StringExtends.cs" />
-    <Compile Include="ScriptRunFunc\Txt_FileHandle.cs" />
+    <Compile Include="ControlService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="windows service conf\01-install.bat" />
+    <None Include="windows service conf\02-start.bat" />
+    <None Include="windows service conf\03-stop.bat" />
+    <None Include="windows service conf\04-uninstall.bat" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="windows service conf\注：以管理员身份运行bat文件.txt" />
+    <Content Include="windows service conf\注：程序文件绝对路径不能包含中文.txt" />
+    <Content Include="windows service conf\注：程序文件放入在 AntCsScriptRun 文件夹中.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ant.csscript.core.domain\ant.csscript.core.domain.csproj">
       <Project>{03d96cdb-be3e-40a0-8c52-12bef68eb7c0}</Project>
       <Name>ant.csscript.core.domain</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Model\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="InitCsScript.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <ProjectReference Include="..\ant.csscript.core\ant.csscript.core.csproj">
+      <Project>{dda12412-eaee-48a2-b30a-97a872f59f8d}</Project>
+      <Name>ant.csscript.core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

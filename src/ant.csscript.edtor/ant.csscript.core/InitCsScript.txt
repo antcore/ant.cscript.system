@@ -18,16 +18,16 @@ namespace CsScript
         {
             string txt = Txt_FileHandle.Instance.LoadFile(FileInfo.FilePathHandle);
             ResultData.FileText = txt;
-            //ResultData.Data = new List<SampleData>()
-            //{
-            //    new SampleData
-            //    {
-            //            ItemName = ""1"",
-            //            PramaName = ""2"",
-            //            PramaValue = ""3"",
-            //            SampleNo = ""4""
-            //        }
-            //};
+            ResultData.Data = new List<SampleData>()
+            {
+                new SampleData
+                {
+                        ItemName = "1",
+                        PramaName = "2",
+                        PramaValue = "3",
+                        SampleNo = "4"
+                    }
+            };
             //运行输出
             RunLog.AppendLine("******** 运行结束 ********");
         }

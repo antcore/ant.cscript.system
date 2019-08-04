@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.AvalonEdit", "a
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.CodeCompletion", "ant.csscript.edtor.AvalonEdit\ICSharpCode.CodeCompletion\ICSharpCode.CodeCompletion.csproj", "{82C28FBB-0408-466A-BE20-BD4A3CE76A75}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ant.csscript.run", "ant.csscript.edtor\ant.csscript.run\ant.csscript.run.csproj", "{01A961B0-9200-43E9-839A-34F5B688DBE3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,10 @@ Global
 		{82C28FBB-0408-466A-BE20-BD4A3CE76A75}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{82C28FBB-0408-466A-BE20-BD4A3CE76A75}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{82C28FBB-0408-466A-BE20-BD4A3CE76A75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01A961B0-9200-43E9-839A-34F5B688DBE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01A961B0-9200-43E9-839A-34F5B688DBE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01A961B0-9200-43E9-839A-34F5B688DBE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01A961B0-9200-43E9-839A-34F5B688DBE3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +73,7 @@ Global
 		{73DFABA6-7D86-48CD-9208-2AB3E6902E75} = {85548733-CB1B-4D54-8D88-C314B847EE99}
 		{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1} = {85548733-CB1B-4D54-8D88-C314B847EE99}
 		{82C28FBB-0408-466A-BE20-BD4A3CE76A75} = {85548733-CB1B-4D54-8D88-C314B847EE99}
+		{01A961B0-9200-43E9-839A-34F5B688DBE3} = {83EF336C-21A1-4653-9FF3-78CEA2C0D9DC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F2B1BDF8-30F9-4725-A900-CAAF5D964575}

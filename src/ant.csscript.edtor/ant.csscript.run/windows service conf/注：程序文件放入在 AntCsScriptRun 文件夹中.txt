@@ -1,0 +1,4 @@
+install.bat 安装服务
+uninstall.bat 卸载服务
+start.bat 启动服务
+stop.bat 停止服务
