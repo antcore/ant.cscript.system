@@ -19,7 +19,7 @@ namespace ant.csscript.editor.avalonedit
             //        "using System.Collections.Generic; " +
             //        "using System.Linq; " +
             //        "using System.Xml; " +
-            //        "using ant.csscript.core; " +
+            //        "using ant.csscript.handle; " +
             //        "using System.Text; ";
 
             return @"
@@ -32,7 +32,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Drawing;
 
-using ant.csscript.core;
+using ant.csscript.handle;
 
 ";
         }

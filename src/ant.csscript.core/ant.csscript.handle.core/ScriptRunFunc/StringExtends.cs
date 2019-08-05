@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ant.csscript.handle
+namespace   ant.csscript.handle.core
 {
     /// <summary>
     /// 字符串 扩展方法

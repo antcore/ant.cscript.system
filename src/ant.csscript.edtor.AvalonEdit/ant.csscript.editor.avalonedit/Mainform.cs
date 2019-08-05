@@ -1,4 +1,4 @@
-﻿using ant.csscript.core.domain;
+﻿using ant.csscript.handle.domain;
 using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.CodeCompletion;
@@ -109,7 +109,7 @@ namespace ant.csscript.editor.avalonedit
                     typeof(System.Linq.Enumerable).Assembly, // System.Core.dll
                     typeof(System.Data.DataRow).Assembly, // System.Drawing.dll
                     typeof(System.Drawing.Image).Assembly, // System.Drawing.dll
-                    typeof(ant.csscript.core.domain.ICsScriptHandleFile).Assembly, // System.Drawing.dll
+                    typeof(ant.csscript.handle.domain.ICsScriptHandleFile).Assembly, // System.Drawing.dll
                     //typeof(Form).Assembly, // System.Windows.Forms.dll
                 };
             }
@@ -195,7 +195,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Drawing;
 
-using ant.csscript.core.domain;
+using ant.csscript.handle.domain;
 
 namespace CsScript
 { 
@@ -402,7 +402,7 @@ namespace CsScript
         //using System;
         //using System.Collections.Generic;
         //using System.Linq; 
-        //using ant.csscript.core;
+        //using ant.csscript.handle;
 
         //namespace scirptcode
         //{

@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 using Microsoft.CSharp;
 
-using ant.csscript.core.domain;
+using ant.csscript.handle.domain;
 using ant.csscript.editor;
 
 
@@ -100,8 +100,8 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Drawing;
 
-using ant.csscript.core;
-using ant.csscript.core.domain;
+using ant.csscript.handle;
+using ant.csscript.handle.domain;
 
 namespace CsScript
 { 

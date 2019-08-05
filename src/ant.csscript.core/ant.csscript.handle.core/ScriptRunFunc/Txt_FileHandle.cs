@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ant.csscript.handle
+namespace ant.csscript.handle.core
 {
     /// <summary>
     /// 文本文件读取

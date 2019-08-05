@@ -1,11 +1,14 @@
-﻿using Microsoft.CSharp;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Emit;
 using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
-namespace ant.csscript.handle.domain
+namespace ant.csscript.handle.domain.core
 {
     /// <summary>
     ///
@@ -16,11 +19,7 @@ namespace ant.csscript.handle.domain
         /// 脚本依赖 三方库 [三方库放入指定路径]
         /// </summary>
         private string DependencyDllPath { get; set; }
-
-        /// <summary>
-        /// 脚本依赖 系统库
-        /// </summary>
-        private List<string> DependencySystemDlls { get; set; }
+         
 
         public string GetRootPath
         {
@@ -40,24 +39,10 @@ namespace ant.csscript.handle.domain
                 return dirPath;
             }
         }
-
-        public CsScriptHandleFile(string _DependencyDllPath = "", List<string> _DependencySystemDlls = null)
+        public CsScriptHandleFile(string _DependencyDllPath = "" )
         {
             DependencyDllPath = string.IsNullOrEmpty(_DependencyDllPath) ? GetPathPluginsCsScriptDependencyDll : _DependencyDllPath;
-            if (null == _DependencySystemDlls)
-                DependencySystemDlls = new List<string>
-                {
-                    "System.dll",
-                    "System.Xml.dll",
-                    "System.Xml.Linq.dll",
-                    "System.linq.dll",
-                    "System.Data.dll",
-                    "System.Drawing.dll"
-                };
-            else
-                DependencySystemDlls = _DependencySystemDlls;
         }
-
         /// <summary>
         /// 动态编译并执行代码
         /// </summary>
@@ -79,67 +64,63 @@ namespace ant.csscript.handle.domain
             StringBuilder sbError = new StringBuilder();
             try
             {
-                CSharpCodeProvider complier = new CSharpCodeProvider();
-                //设置编译参数
-                CompilerParameters paras = new CompilerParameters();
-                //引入第三方dll
-                if (null != DependencySystemDlls)
-                    foreach (var item in DependencySystemDlls)
-                        paras.ReferencedAssemblies.Add(item);
-                //paras.ReferencedAssemblies.Add("System.dll");
-                //paras.ReferencedAssemblies.Add("System.Xml.dll");
-                //paras.ReferencedAssemblies.Add("System.Xml.Linq.dll");
-                //paras.ReferencedAssemblies.Add("System.linq.dll");
-                //paras.ReferencedAssemblies.Add("System.Data.dll");
-                //paras.ReferencedAssemblies.Add("System.Drawing.dll");
+                // 引用系统依赖
+                var references = AppDomain.CurrentDomain.GetAssemblies().Select(x => MetadataReference.CreateFromFile(x.Location));
+
+                List<MetadataReference> _references = new List<MetadataReference>();
                 //引入第三方dll
                 if (!string.IsNullOrEmpty(DependencyDllPath) && System.IO.Directory.Exists(DependencyDllPath))
                 {
                     var directoryInfo = new System.IO.DirectoryInfo(DependencyDllPath);
                     var files = directoryInfo.GetFiles("*.dll");
                     foreach (var item in files)
-                        paras.ReferencedAssemblies.Add(item.FullName);
+                        _references.Add(MetadataReference.CreateFromFile(item.FullName));
                 }
-                //是否内存中生成输出
-                paras.GenerateInMemory = true;
-                //是否生成可执行文件
-                paras.GenerateExecutable = false;
-                //string OutPutDllPath = "";
-                //paras.OutputAssembly = OutPutDllPath;
-                //paras.OutputAssembly = binpath + dllName + ".dll";
-                //编译代码
-                var result = complier.CompileAssemblyFromSource(paras, CsScriptCode);
-                //编译脚本异常
-                if (result.Errors.HasErrors)
-                {
-                    sbError.AppendLine("【编译】脚本异常: ");
-                    foreach (CompilerError err in result.Errors)
-                        sbError.AppendLine($"{err.ErrorText}");
-                }
-                else
-                {
-                    //if (null == StaticInfo.ScriptInfoCompilerResults)
-                    //    StaticInfo.ScriptInfoCompilerResults = new Dictionary<Guid, CompilerResults>();
-                    //if (StaticInfo.ScriptInfoCompilerResults.ContainsKey(CsScriptGuid))
-                    //    StaticInfo.ScriptInfoCompilerResults[CsScriptGuid] = result;
-                    //else
-                    //    StaticInfo.ScriptInfoCompilerResults.Add(CsScriptGuid, result);
+                _references.AddRange(references);
 
-                    if (null == StaticInfo.ScriptInfoCompilerResults)
-                        StaticInfo.ScriptInfoCompilerResults = new List<CsScirptCompilerInfo>();
+                SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(CsScriptCode);
 
-                    var OldComplierResult = StaticInfo.ScriptInfoCompilerResults.FirstOrDefault(o => o.CsScirptGuid == CsScriptGuid);
-                    if (null == OldComplierResult)
-                        StaticInfo.ScriptInfoCompilerResults.Add(new CsScirptCompilerInfo
-                        {
-                            CsScirptGuid = CsScriptGuid,
-                            CsScirptCode = CsScriptCode,
-                            CsAssembly = result.CompiledAssembly
-                        });
+                CSharpCompilation compilation = CSharpCompilation.Create(
+                    null,
+                    syntaxTrees: new[] { syntaxTree },
+                    references: _references,
+                    options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+
+                using (var ms = new MemoryStream())
+                {
+                    EmitResult result = compilation.Emit(ms);
+
+                    //编译脚本异常
+                    if (!result.Success)
+                    {
+                        IEnumerable<Diagnostic> failures = result.Diagnostics.Where(diagnostic =>
+                            diagnostic.IsWarningAsError ||
+                            diagnostic.Severity == DiagnosticSeverity.Error);
+
+                        sbError.AppendLine("【编译】脚本异常: ");
+                        foreach (Diagnostic diagnostic in failures)
+                            sbError.AppendLine($"{diagnostic.Id}:${diagnostic.GetMessage()}");
+                    }
                     else
-                        OldComplierResult.CsAssembly = result.CompiledAssembly;
+                    {
+                        ms.Seek(0, SeekOrigin.Begin);
+                        Assembly assembly = Assembly.Load(ms.ToArray());
 
-                    CompilerFalg = true;
+                        if (null == StaticInfo.ScriptInfoCompilerResults)
+                            StaticInfo.ScriptInfoCompilerResults = new List<CsScirptCompilerInfo>();
+                        var OldComplierResult = StaticInfo.ScriptInfoCompilerResults.FirstOrDefault(o => o.CsScirptGuid == CsScriptGuid);
+                        if (null == OldComplierResult)
+                            StaticInfo.ScriptInfoCompilerResults.Add(new CsScirptCompilerInfo
+                            {
+                                CsScirptGuid = CsScriptGuid,
+                                CsScirptCode = CsScriptCode,
+                                CsAssembly = assembly
+                            });
+                        else
+                            OldComplierResult.CsAssembly = assembly;
+
+                        CompilerFalg = true;
+                    }
                 }
             }
             catch (Exception ex)
@@ -167,7 +148,8 @@ namespace ant.csscript.handle.domain
             }
             try
             {
-                ICsScriptHandleFile iCsScript = null;
+           
+                ICsScriptHandleFile iCsScript = null; 
                 var objAssembly = compilerResults.CsAssembly;
                 Type[] types = objAssembly.GetTypes();
                 foreach (var t in types)
@@ -181,7 +163,6 @@ namespace ant.csscript.handle.domain
                         FilePathSource = FilePathSource
                     };
                     iCsScript.Init(fileInfo);//初始化脚本参数
-
                     try
                     {
                         iCsScript.Run();

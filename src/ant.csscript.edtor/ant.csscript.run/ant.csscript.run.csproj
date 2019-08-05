@@ -62,13 +62,13 @@
     <Content Include="windows service conf\注：程序文件放入在 AntCsScriptRun 文件夹中.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ant.csscript.core.domain\ant.csscript.core.domain.csproj">
+    <ProjectReference Include="..\ant.csscript.core.domain\ant.csscript.handle.domain.csproj">
       <Project>{03d96cdb-be3e-40a0-8c52-12bef68eb7c0}</Project>
-      <Name>ant.csscript.core.domain</Name>
+      <Name>ant.csscript.handle.domain</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ant.csscript.core\ant.csscript.core.csproj">
+    <ProjectReference Include="..\ant.csscript.core\ant.csscript.handle.csproj">
       <Project>{dda12412-eaee-48a2-b30a-97a872f59f8d}</Project>
-      <Name>ant.csscript.core</Name>
+      <Name>ant.csscript.handle</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

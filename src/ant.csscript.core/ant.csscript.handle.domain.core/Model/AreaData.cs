@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
-namespace ant.csscript.handle.domain
+namespace ant.csscript.handle.domain.core
 {
     /// <summary>
     /// 区域数据
@@ -11,14 +14,11 @@ namespace ant.csscript.handle.domain
         /// 区域名称
         /// </summary>
         public string AreaName { get; set; }
-
         public AreaData()
         {
             Rows = new List<AreaRow>(5);
         }
-
         public List<AreaRow> Rows { get; set; }
-
         /// <summary>
         /// 行数
         /// </summary>
@@ -48,7 +48,6 @@ namespace ant.csscript.handle.domain
                 Rows[row][column] = value;
             }
         }
-
         /// <summary>
         /// 截取一个范围内的 数据为新的区域
         /// </summary>
@@ -107,7 +106,6 @@ namespace ant.csscript.handle.domain
                 });
             }
         }
-
         /// <summary>
         /// 列名
         /// </summary>
@@ -162,7 +160,6 @@ namespace ant.csscript.handle.domain
                 Rows.ForEach(r => { r[columnIndex].ColumnName = name; });
             }
         }
-
         /// <summary>
         /// 设置列名
         /// </summary>
@@ -180,7 +177,6 @@ namespace ant.csscript.handle.domain
             }
         }
     }
-
     /// <summary>
     /// 行
     /// </summary>
@@ -190,7 +186,6 @@ namespace ant.csscript.handle.domain
         {
             Row = new List<AreaItemValue>(10);
         }
-
         public List<AreaItemValue> Row { get; set; }
 
         /// <summary>
@@ -214,7 +209,6 @@ namespace ant.csscript.handle.domain
                 Row[index] = value;
             }
         }
-
         public AreaItemValue this[string columnName]
         {
             get
@@ -239,12 +233,10 @@ namespace ant.csscript.handle.domain
         /// 列号
         /// </summary>
         public int? ColumnIndex { get; set; }
-
         /// <summary>
         /// 行号
         /// </summary>
         public int? RowIndex { get; set; }
-
         public string ColumnName { get; set; }
         private string _Value;
 
@@ -262,12 +254,10 @@ namespace ant.csscript.handle.domain
         /// 真实页码
         /// </summary>
         public int PageNum { get; set; }
-
         /// <summary>
         /// 真实行号
         /// </summary>
         public int RowNum { get; set; }
-
         /// <summary>
         /// 真实列号
         /// </summary>

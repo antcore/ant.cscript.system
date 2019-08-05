@@ -87,9 +87,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\ant.csscript.edtor\ant.csscript.core.domain\ant.csscript.core.domain.csproj">
+    <ProjectReference Include="..\..\ant.csscript.edtor\ant.csscript.core.domain\ant.csscript.handle.domain.csproj">
       <Project>{03d96cdb-be3e-40a0-8c52-12bef68eb7c0}</Project>
-      <Name>ant.csscript.core.domain</Name>
+      <Name>ant.csscript.handle.domain</Name>
     </ProjectReference>
     <ProjectReference Include="..\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6c55b776-26d4-4db3-a6ab-87e783b2f3d1}</Project>

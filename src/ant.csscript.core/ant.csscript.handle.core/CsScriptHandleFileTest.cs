@@ -7,8 +7,8 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Drawing;
 
-using ant.csscript.handle;
-using ant.csscript.handle.domain;
+using ant.csscript.handle.core; 
+using ant.csscript.handle.domain.core;
 
 namespace CsScript
 { 

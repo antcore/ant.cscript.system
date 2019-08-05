@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System; 
+using System.Collections.Generic;
+using System.Reflection;
 
-namespace ant.csscript.handle.domain
+namespace ant.csscript.handle.domain.core
 {
     public class StaticInfo
     {

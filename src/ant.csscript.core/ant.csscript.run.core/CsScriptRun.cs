@@ -1,4 +1,4 @@
-﻿using ant.csscript.handle.domain;
+﻿using ant.csscript.handle.domain.core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -71,6 +71,8 @@ namespace ant.csscript.run
                 return;
             }
             Console.WriteLine(!string.IsNullOrEmpty(CompilerMessage) ? CompilerMessage : "已完成编译");
+
+            return;
 
             //执行脚本
             FilePathHandle = FilePathSource = filePath;

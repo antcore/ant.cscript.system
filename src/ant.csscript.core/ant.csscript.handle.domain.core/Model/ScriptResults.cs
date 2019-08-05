@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ant.csscript.handle.domain
+namespace ant.csscript.handle.domain.core
 {
     public class ScriptResults<T> where T : class
     {
@@ -8,12 +8,10 @@ namespace ant.csscript.handle.domain
         /// 文本数据
         /// </summary>
         public string FileText { get; set; }
-
         /// <summary>
         /// 表格数据
         /// </summary>
         public List<AreaData> FileAreaData { get; set; }
-
         /// <summary>
         /// 格式化数据
         /// </summary>

@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="InitCsScript.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="InitCsScript.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ant.csscript.handle.domain.core\ant.csscript.handle.domain.core.csproj" />
+  </ItemGroup>
+
+</Project>

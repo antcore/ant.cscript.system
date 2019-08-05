@@ -7,8 +7,8 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Drawing;
 
-using ant.csscript.handle;
-using ant.csscript.handle.domain;
+using ant.csscript.handle.core;
+using ant.csscript.handle.domain.core;
 
 namespace CsScript
 { 
@@ -18,16 +18,16 @@ namespace CsScript
         {
             string txt = Txt_FileHandle.Instance.LoadFile(FileInfo.FilePathHandle);
             ResultData.FileText = txt;
-            //ResultData.Data = new List<SampleData>()
-            //{
-            //    new SampleData
-            //    {
-            //            ItemName = ""1"",
-            //            PramaName = ""2"",
-            //            PramaValue = ""3"",
-            //            SampleNo = ""4""
-            //        }
-            //};
+            ResultData.Data = new List<SampleData>()
+            {
+                new SampleData
+                {
+                        ItemName = "1",
+                        PramaName = "2",
+                        PramaValue = "3",
+                        SampleNo = "4"
+                    }
+            };
             //运行输出
             RunLog.AppendLine("******** 运行结束 ********");
         }

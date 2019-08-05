@@ -1,6 +1,8 @@
-﻿using System.Text;
+﻿using ant.csscript.handle;
+using System.Collections.Generic;
+using System.Text;
 
-namespace ant.csscript.handle.domain
+namespace ant.csscript.handle.domain.core
 {
     /// <summary>
     /// 处理文件数据
@@ -11,24 +13,20 @@ namespace ant.csscript.handle.domain
         /// 初始化脚本参数
         /// </summary>
         void Init(FileInfoWaitHandle _fileInfo);
-
         /// <summary>
-        ///
+        /// 
         /// </summary>
         void Run();
-
         /// <summary>
-        ///
+        /// 
         /// </summary>
         StringBuilder RunLog { get; set; }
-
         /// <summary>
         /// 需要处理文件信息
         /// </summary>
-        FileInfoWaitHandle FileInfo { get; set; }
-
+        FileInfoWaitHandle FileInfo { get; set; } 
         /// <summary>
-        ///
+        /// 
         /// </summary>
         ScriptResults<SampleData> ResultData { get; set; }
     }
