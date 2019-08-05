@@ -39,9 +39,23 @@ namespace ant.csscript.handle.domain.core
                 return dirPath;
             }
         }
+
+        List<MetadataReference> references = new List<MetadataReference>();
+
         public CsScriptHandleFile(string _DependencyDllPath = "" )
         {
             DependencyDllPath = string.IsNullOrEmpty(_DependencyDllPath) ? GetPathPluginsCsScriptDependencyDll : _DependencyDllPath;
+            //引入第三方dll
+            if (!string.IsNullOrEmpty(DependencyDllPath) && System.IO.Directory.Exists(DependencyDllPath))
+            {
+                var directoryInfo = new System.IO.DirectoryInfo(DependencyDllPath);
+                var files = directoryInfo.GetFiles("*.dll");
+                foreach (var item in files)
+                    references.Add(MetadataReference.CreateFromFile(item.FullName));
+            }
+            // 引用系统依赖
+            references.AddRange(AppDomain.CurrentDomain.GetAssemblies().Select(x => MetadataReference.CreateFromFile(x.Location)));
+
         }
         /// <summary>
         /// 动态编译并执行代码
@@ -64,26 +78,30 @@ namespace ant.csscript.handle.domain.core
             StringBuilder sbError = new StringBuilder();
             try
             {
-                // 引用系统依赖
-                var references = AppDomain.CurrentDomain.GetAssemblies().Select(x => MetadataReference.CreateFromFile(x.Location));
+                sbError.AppendLine(AppDomain.CurrentDomain.GetAssemblies().Length + "-----------------AppDomain.CurrentDomain.GetAssemblies()");
 
-                List<MetadataReference> _references = new List<MetadataReference>();
-                //引入第三方dll
-                if (!string.IsNullOrEmpty(DependencyDllPath) && System.IO.Directory.Exists(DependencyDllPath))
-                {
-                    var directoryInfo = new System.IO.DirectoryInfo(DependencyDllPath);
-                    var files = directoryInfo.GetFiles("*.dll");
-                    foreach (var item in files)
-                        _references.Add(MetadataReference.CreateFromFile(item.FullName));
-                }
-                _references.AddRange(references);
+                // 引用系统依赖
+                //var references = AppDomain.CurrentDomain.GetAssemblies().Select(x => {
+                //    sbError.AppendLine(x.Location + "");
+                //    return MetadataReference.CreateFromFile(x.Location);
+                //});
+                //List<MetadataReference> _references = new List<MetadataReference>();
+                ////引入第三方dll
+                //if (!string.IsNullOrEmpty(DependencyDllPath) && System.IO.Directory.Exists(DependencyDllPath))
+                //{
+                //    var directoryInfo = new System.IO.DirectoryInfo(DependencyDllPath);
+                //    var files = directoryInfo.GetFiles("*.dll");
+                //    foreach (var item in files)
+                //        references.Add(MetadataReference.CreateFromFile(item.FullName));
+                //}
+                //_references.AddRange(references);
 
                 SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(CsScriptCode);
 
                 CSharpCompilation compilation = CSharpCompilation.Create(
                     null,
                     syntaxTrees: new[] { syntaxTree },
-                    references: _references,
+                    references: references,
                     options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
                 using (var ms = new MemoryStream())
