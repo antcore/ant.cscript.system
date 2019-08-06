@@ -1,32 +1,20 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
-using Microsoft.Extensions.DependencyModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace ant.core.csscript.test
+namespace ant.csscript.handle.domain.core
 {
-    class Program
+    internal class Demo
     {
-        static void Main(string[] args)
+        private static void test()
         {
-
-
-
-
-
-
-
-
-
-
             SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(@"
             using System;
-
             namespace RoslynCompileSample
             {
                 public class Writer
@@ -37,12 +25,9 @@ namespace ant.core.csscript.test
                     }
                 }
             }");
-
             string assemblyName = Path.GetRandomFileName();
-
             // 引用
             var references = AppDomain.CurrentDomain.GetAssemblies().Select(x => MetadataReference.CreateFromFile(x.Location));
-
 
             CSharpCompilation compilation = CSharpCompilation.Create(
                 null,
@@ -60,9 +45,7 @@ namespace ant.core.csscript.test
                         diagnostic.IsWarningAsError ||
                         diagnostic.Severity == DiagnosticSeverity.Error);
                     foreach (Diagnostic diagnostic in failures)
-                    {
                         Console.Error.WriteLine("{0}: {1}", diagnostic.Id, diagnostic.GetMessage());
-                    }
                 }
                 else
                 {
@@ -76,13 +59,9 @@ namespace ant.core.csscript.test
                         null,
                         obj,
                         new object[] { "Hello World" });
-
                 }
             }
-
-
             Console.WriteLine("***** END *****");
-
             Console.ReadLine();
         }
     }

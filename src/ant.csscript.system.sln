@@ -23,19 +23,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.CodeCompletion"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ant.csscript.run", "ant.csscript.edtor\ant.csscript.run\ant.csscript.run.csproj", "{01A961B0-9200-43E9-839A-34F5B688DBE3}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ant.core.csscript", "ant.core.csscript", "{A9B7B3BC-F8F2-45F3-A40C-FA596F7C18E8}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ant.test", "ant.test", "{D8DD0B48-714A-4001-ACCE-B51D66F4EF3A}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ant.core.csscript.test", "ant.core.csscript\ant.core.csscript.test\ant.core.csscript.test.csproj", "{90CFC989-2E52-485E-B9E6-AB30EBC5D66A}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ant.csscript.core", "ant.csscript.core", "{220B7CFE-5ADA-45C3-B63F-B959C17F84C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ant.csscript.handle.core", "ant.csscript.core\ant.csscript.handle.core\ant.csscript.handle.core.csproj", "{70760B86-7900-4BDB-BC73-7B9B171340BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ant.csscript.handle.core", "ant.csscript.core\ant.csscript.handle.core\ant.csscript.handle.core.csproj", "{70760B86-7900-4BDB-BC73-7B9B171340BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ant.csscript.handle.domain.core", "ant.csscript.core\ant.csscript.handle.domain.core\ant.csscript.handle.domain.core.csproj", "{F6C2A2F6-43B4-4741-BB12-1AC6A65CA6D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ant.csscript.handle.domain.core", "ant.csscript.core\ant.csscript.handle.domain.core\ant.csscript.handle.domain.core.csproj", "{F6C2A2F6-43B4-4741-BB12-1AC6A65CA6D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ant.csscript.run.core", "ant.csscript.core\ant.csscript.run.core\ant.csscript.run.core.csproj", "{E7FB0128-4E0E-436E-AE48-48301C493E2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ant.csscript.run.core", "ant.csscript.core\ant.csscript.run.core\ant.csscript.run.core.csproj", "{E7FB0128-4E0E-436E-AE48-48301C493E2B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,10 +69,6 @@ Global
 		{01A961B0-9200-43E9-839A-34F5B688DBE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01A961B0-9200-43E9-839A-34F5B688DBE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01A961B0-9200-43E9-839A-34F5B688DBE3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{90CFC989-2E52-485E-B9E6-AB30EBC5D66A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{90CFC989-2E52-485E-B9E6-AB30EBC5D66A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{90CFC989-2E52-485E-B9E6-AB30EBC5D66A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{90CFC989-2E52-485E-B9E6-AB30EBC5D66A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{70760B86-7900-4BDB-BC73-7B9B171340BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{70760B86-7900-4BDB-BC73-7B9B171340BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70760B86-7900-4BDB-BC73-7B9B171340BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -104,8 +94,6 @@ Global
 		{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1} = {85548733-CB1B-4D54-8D88-C314B847EE99}
 		{82C28FBB-0408-466A-BE20-BD4A3CE76A75} = {85548733-CB1B-4D54-8D88-C314B847EE99}
 		{01A961B0-9200-43E9-839A-34F5B688DBE3} = {83EF336C-21A1-4653-9FF3-78CEA2C0D9DC}
-		{D8DD0B48-714A-4001-ACCE-B51D66F4EF3A} = {A9B7B3BC-F8F2-45F3-A40C-FA596F7C18E8}
-		{90CFC989-2E52-485E-B9E6-AB30EBC5D66A} = {D8DD0B48-714A-4001-ACCE-B51D66F4EF3A}
 		{70760B86-7900-4BDB-BC73-7B9B171340BC} = {220B7CFE-5ADA-45C3-B63F-B959C17F84C3}
 		{F6C2A2F6-43B4-4741-BB12-1AC6A65CA6D6} = {220B7CFE-5ADA-45C3-B63F-B959C17F84C3}
 		{E7FB0128-4E0E-436E-AE48-48301C493E2B} = {220B7CFE-5ADA-45C3-B63F-B959C17F84C3}
