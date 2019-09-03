@@ -31,11 +31,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ant.core.csscript.test", "a
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ant.csscript.core", "ant.csscript.core", "{220B7CFE-5ADA-45C3-B63F-B959C17F84C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ant.csscript.handle.core", "ant.csscript.core\ant.csscript.handle.core\ant.csscript.handle.core.csproj", "{70760B86-7900-4BDB-BC73-7B9B171340BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ant.csscript.handle.core", "ant.csscript.core\ant.csscript.handle.core\ant.csscript.handle.core.csproj", "{70760B86-7900-4BDB-BC73-7B9B171340BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ant.csscript.handle.domain.core", "ant.csscript.core\ant.csscript.handle.domain.core\ant.csscript.handle.domain.core.csproj", "{F6C2A2F6-43B4-4741-BB12-1AC6A65CA6D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ant.csscript.handle.domain.core", "ant.csscript.core\ant.csscript.handle.domain.core\ant.csscript.handle.domain.core.csproj", "{F6C2A2F6-43B4-4741-BB12-1AC6A65CA6D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ant.csscript.run.core", "ant.csscript.core\ant.csscript.run.core\ant.csscript.run.core.csproj", "{E7FB0128-4E0E-436E-AE48-48301C493E2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ant.csscript.run.core", "ant.csscript.core\ant.csscript.run.core\ant.csscript.run.core.csproj", "{E7FB0128-4E0E-436E-AE48-48301C493E2B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ant.handle.files", "ant.handle.files", "{EBE233CD-FDCC-4E8A-90B5-B1E9899D2B0B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ant.handle.files.scanning", "ant.handle.files\ant.handle.files.scanning\ant.handle.files.scanning.csproj", "{80C58359-6B2F-4E50-A4F9-47769A7DEB04}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -91,6 +95,10 @@ Global
 		{E7FB0128-4E0E-436E-AE48-48301C493E2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7FB0128-4E0E-436E-AE48-48301C493E2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7FB0128-4E0E-436E-AE48-48301C493E2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80C58359-6B2F-4E50-A4F9-47769A7DEB04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80C58359-6B2F-4E50-A4F9-47769A7DEB04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80C58359-6B2F-4E50-A4F9-47769A7DEB04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80C58359-6B2F-4E50-A4F9-47769A7DEB04}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -109,6 +117,7 @@ Global
 		{70760B86-7900-4BDB-BC73-7B9B171340BC} = {220B7CFE-5ADA-45C3-B63F-B959C17F84C3}
 		{F6C2A2F6-43B4-4741-BB12-1AC6A65CA6D6} = {220B7CFE-5ADA-45C3-B63F-B959C17F84C3}
 		{E7FB0128-4E0E-436E-AE48-48301C493E2B} = {220B7CFE-5ADA-45C3-B63F-B959C17F84C3}
+		{80C58359-6B2F-4E50-A4F9-47769A7DEB04} = {EBE233CD-FDCC-4E8A-90B5-B1E9899D2B0B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F2B1BDF8-30F9-4725-A900-CAAF5D964575}
