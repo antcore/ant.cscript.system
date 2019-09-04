@@ -48,16 +48,8 @@ namespace ant.handle.files.scanning
         bool flaThreadServiceScanFiles = true;
 
 
-        private void FileWatch_EventGetFile(string fileFullPath)
-        {
-            
 
-            //sbMessage.AppendLine(fileFullPath);
-
-            //showMessage(sbMessage.ToString(), Color.Black);
-        }
-
-        private   void fileSystemWatcher_Changed(object sender, FileSystemEventArgs e)
+        private void fileWatcher_Changed(object sender, FileSystemEventArgs e)
         {
             StringBuilder sbMessage = new StringBuilder();
             switch (e.ChangeType)
@@ -77,22 +69,16 @@ namespace ant.handle.files.scanning
             string rootPath = string.Empty;
 
             rootPath = @"C:\00Files\00testfiles";
-            rootPath = @"C:\Users\mr\Desktop\新建文件夹";
 
             var fileNameFilter = "*.txt";
 
-            //var fileWatch = new FileWatchHandle(rootPath);
-
-            //fileWatch.EventGetFile += FileWatch_EventGetFile;
-            //fileWatch.Start();
-
-            var  s_DelayFileSystemWatcher = new DelayFileSystemWatcher(rootPath, fileNameFilter, fileSystemWatcher_Changed, 500);
-            
-
+            var fileWatcher = new DelayFileSystemWatcher(rootPath, fileNameFilter, fileWatcher_Changed);
+            fileWatcher.Start();
+ 
 
             return;
 
-              rootPath = string.Empty;
+            rootPath = string.Empty;
 
             rootPath = @"C:\00Files\00testfiles";
             rootPath = @"C:\Users\mr\Desktop\新建文件夹";
@@ -101,7 +87,7 @@ namespace ant.handle.files.scanning
             // 过滤目录
             var filterDirectoryNames = "*";
             // 过滤文件夹
-              fileNameFilter = "*.txt";
+            fileNameFilter = "*.txt";
             // 检查文件开始时间
             var CheckFileStartDateTime = DateTime.Parse("2019-09-03");
             // 检查文件夹深度
@@ -153,7 +139,7 @@ namespace ant.handle.files.scanning
                             sbMessage.AppendLine($"【扫描结果】：【扫描耗时】{stopWatch.ElapsedMilliseconds} (毫秒)");
                             sbMessage.AppendLine($"【扫描结果】：【发现文件】{ResultFileScan.Count} (个)");
 
-                            CheckFileStartDateTime = DateTime.Now.AddMilliseconds(-stopWatch.ElapsedMilliseconds-50);
+                            CheckFileStartDateTime = DateTime.Now.AddMilliseconds(-stopWatch.ElapsedMilliseconds - 50);
                             //记录文件
                             if (ResultFileScan.Count > 0)
                             {
@@ -187,11 +173,11 @@ namespace ant.handle.files.scanning
             }
         }
 
-     
+
         private void ThreadAction(Action<object> action)
         {
             new Thread(new ParameterizedThreadStart(action)).Start();
-        } 
+        }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {

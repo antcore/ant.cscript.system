@@ -9,59 +9,86 @@ namespace ant.handle.files.scanning
 {
     public class DelayFileSystemWatcher
     {
-        private readonly Timer m_Timer;
-        private readonly Int32 m_TimerInterval;
-        private readonly FileSystemWatcher m_FileSystemWatcher;
-        private readonly FileSystemEventHandler m_FileSystemEventHandler;
-        private readonly Dictionary<String, FileSystemEventArgs> m_ChangedFiles = new Dictionary<string, FileSystemEventArgs>();
+        private readonly string WatchPathDirectory;
+        private readonly FileSystemWatcher fileWatcher;
+        private readonly Timer timerHandle;
+        private readonly Int32 timerHandleInterval;
 
-        public DelayFileSystemWatcher(string path, string filter, FileSystemEventHandler watchHandler, int timerInterval)
+        private readonly Dictionary<string, FileSystemEventArgs> changedFiles ;
+
+        private readonly FileSystemEventHandler fileSystemEventHandler;
+        public DelayFileSystemWatcher(string WatchDirectory, string filter, FileSystemEventHandler watchHandler, int timerInterval = 250)
         {
-            m_Timer = new Timer(OnTimer, null, Timeout.Infinite, Timeout.Infinite);
-            m_FileSystemWatcher = new FileSystemWatcher(path, filter);
-            m_FileSystemWatcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.CreationTime;
-            m_FileSystemWatcher.Created += fileSystemWatcher_Changed;
-            m_FileSystemWatcher.Changed += fileSystemWatcher_Changed;
-            m_FileSystemWatcher.Deleted += fileSystemWatcher_Changed;
-            m_FileSystemWatcher.Renamed += fileSystemWatcher_Changed;
+            if (!Directory.Exists(WatchDirectory))
+                return ;
+            WatchPathDirectory = WatchDirectory;
 
-            //子目录
-            m_FileSystemWatcher.IncludeSubdirectories = true;
+            fileWatcher = new FileSystemWatcher();
+            fileWatcher.Path = WatchDirectory;
+            fileWatcher.Filter = filter;
 
-            m_FileSystemWatcher.EnableRaisingEvents = true;
-            m_FileSystemEventHandler = watchHandler;
-            m_TimerInterval = timerInterval;
+            //附带监控子目录
+            fileWatcher.IncludeSubdirectories = true;
+            //监控事件类型
+            fileWatcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.CreationTime;
+
+            timerHandle = new Timer(OnTimer, null, Timeout.Infinite, Timeout.Infinite);
+            changedFiles = new Dictionary<string, FileSystemEventArgs>();
+            
+            fileSystemEventHandler = watchHandler;
+            timerHandleInterval = timerInterval;
         }
 
-        public void fileSystemWatcher_Changed(object sender, FileSystemEventArgs e)
+        public bool Start()
         {
-            lock (m_ChangedFiles)
-            {
-                if (!m_ChangedFiles.ContainsKey(e.FullPath))
-                {
-                    m_ChangedFiles.Add(e.FullPath, e);
-                }
-            }
-            m_Timer.Change(m_TimerInterval, Timeout.Infinite);
+            if (!Directory.Exists(WatchPathDirectory))
+                return false;
+
+            fileWatcher.Created += FileWatcher_Created;
+            fileWatcher.Created += FileWatcher_Created;
+            fileWatcher.Changed += FileWatcher_Created;
+            //fileWatcher.Deleted += FileWatcher_Created;
+            fileWatcher.Renamed += FileWatcher_Created;
+
+            fileWatcher.EnableRaisingEvents = true;
+
+            return true;
+        }
+
+        public void Stop()
+        {
+            fileWatcher.Created -= FileWatcher_Created;
+            fileWatcher.Changed -= FileWatcher_Created;
+            //fileWatcher.Deleted -= FileWatcher_Created;
+            fileWatcher.Renamed -= FileWatcher_Created;
+
+            fileWatcher.EnableRaisingEvents = false;
+        }
+
+
+        public void FileWatcher_Created(object sender, FileSystemEventArgs e)
+        {
+            lock (changedFiles)
+                if (!changedFiles.ContainsKey(e.FullPath))
+                    changedFiles.Add(e.FullPath, e);
+            timerHandle.Change(timerHandleInterval, Timeout.Infinite);
         }
 
         private void OnTimer(object state)
         {
-            var tempChangedFiles = new Dictionary<string, FileSystemEventArgs>();
+            var _changedFiles = new Dictionary<string, FileSystemEventArgs>();
 
-            lock (m_ChangedFiles)
+            lock (changedFiles)
             {
-                foreach (KeyValuePair<string, FileSystemEventArgs> changedFile in m_ChangedFiles)
-                {
-                    tempChangedFiles.Add(changedFile.Key, changedFile.Value);
-                }
-                m_ChangedFiles.Clear();
+                foreach (var changedFile in changedFiles)
+                    _changedFiles.Add(changedFile.Key, changedFile.Value);
+                changedFiles.Clear();
             }
 
-            foreach (KeyValuePair<string, FileSystemEventArgs> changedFile in tempChangedFiles)
-            {
-                m_FileSystemEventHandler(this, changedFile.Value);
-            }
+            foreach (var changedFile in _changedFiles)
+                fileSystemEventHandler(this, changedFile.Value);
+
+            _changedFiles.Clear();
         }
     }
 }
