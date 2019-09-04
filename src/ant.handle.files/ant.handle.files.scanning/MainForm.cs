@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -22,14 +23,38 @@ namespace ant.handle.files.scanning
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            ServiceScanFiles();
+            ThreadAction((o) =>
+            {
+                ServiceScanFiles();
+            });
         }
+
+        private void showMessage(string message, Color color)
+        {
+            if (!flaThreadServiceScanFiles)
+                return;
+            Invoke(new MethodInvoker(delegate
+            {
+                if (richTextBoxMessage.TextLength > 5000)
+                    richTextBoxMessage.Clear();
+
+                richTextBoxMessage.SelectionColor = color;
+                richTextBoxMessage.AppendText(message);
+                richTextBoxMessage.ScrollToCaret();
+            }));
+        }
+
+
+        bool flaThreadServiceScanFiles = true;
 
         void ServiceScanFiles()
         {
             string rootPath = string.Empty;
 
             rootPath = @"C:\00Files\00testfiles";
+            rootPath = @"C:\Users\mr\Desktop\新建文件夹";
+
+
             // 过滤目录
             var filterDirectoryNames = "*";
             // 过滤文件夹
@@ -39,27 +64,83 @@ namespace ant.handle.files.scanning
             // 检查文件夹深度
             var DirectoryDeepCheck = 3;
             var DirectoryDeepCurrent = 1;
+            //扫描间隔
+            int ScanIntervalSeconds = 5;
 
+            fileNameFilter = "*.txt,*.xlsx,*.xls";
+
+            Stopwatch stopWatch = new Stopwatch();
             StringBuilder sbMessage = new StringBuilder();
-            while (true)
+            var ResultFileScan = new List<string>();
+
+            DateTime runStart = DateTime.Parse("2019-09-04");
+            while (flaThreadServiceScanFiles)
             {
-                if (Directory.Exists(rootPath))
+                if (runStart.AddSeconds(ScanIntervalSeconds) <= DateTime.Now)
                 {
-                    var rule = new FileScanningRule(filterDirectoryNames, fileNameFilter);
-                    rule.PathDirectory = rootPath;
-                    rule.DirectoryDeepCheck = DirectoryDeepCheck;
-                    rule.DirectoryDeepCurrent = DirectoryDeepCurrent;
-                    rule.CheckFileStartDateTime = CheckFileStartDateTime;
+                    #region 执行文件查找
+                    sbMessage.Clear();
+                    stopWatch.Restart();
 
-                    List<string> ResultFileScan = new List<string>();
-                    GetFiles(rule, ref ResultFileScan);
+                    sbMessage.AppendLine(@"-------------------- 文件扫描开始 --------------------");
+                    sbMessage.AppendLine($"【扫描条件：目录】    {rootPath}");
+                    sbMessage.AppendLine($"【扫描条件：目录深度】{DirectoryDeepCheck}");
+                    sbMessage.AppendLine($"【扫描条件：目录过滤】{filterDirectoryNames}");
+                    sbMessage.AppendLine($"【扫描条件：文件过滤】{fileNameFilter}");
+                    sbMessage.AppendLine($"【扫描条件：起始时间】{CheckFileStartDateTime}");
+                    sbMessage.AppendLine();
+                    sbMessage.AppendLine($"【扫描结果】：【执行时间】{DateTime.Now}");
+                    if (Directory.Exists(rootPath))
+                    {
+                        var rule = new FileScanningRule(filterDirectoryNames, fileNameFilter);
+                        rule.PathDirectory = rootPath;
+                        rule.DirectoryDeepCheck = DirectoryDeepCheck;
+                        rule.DirectoryDeepCurrent = DirectoryDeepCurrent;
+                        rule.CheckFileStartDateTime = CheckFileStartDateTime;
+                        try
+                        {
+                            stopWatch.Start();
+                            ResultFileScan.Clear();
+                            GetFiles(rule, ref ResultFileScan);
+                            stopWatch.Stop();
+
+                            sbMessage.AppendLine($"【扫描结果】：【扫描耗时】{stopWatch.ElapsedMilliseconds} (毫秒)");
+                            sbMessage.AppendLine($"【扫描结果】：【发现文件】{ResultFileScan.Count} (个)");
+
+                            CheckFileStartDateTime = DateTime.Now.AddMilliseconds(-stopWatch.ElapsedMilliseconds);
+                            //记录文件
+                            if (ResultFileScan.Count > 0)
+                            {
+                                sbMessage.AppendLine();
+                                sbMessage.AppendLine($"    ************  目标文件 START ************ ");
+                                foreach (var item in ResultFileScan)
+                                {
+                                    sbMessage.AppendLine($" File:   {item}");
+                                }
+                                sbMessage.AppendLine($"    ************  目标文件 END ************ ");
+                                sbMessage.AppendLine();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            sbMessage.AppendLine($"【扫描文件异常】{ex.ToString()}");
+                        }
+                    }
+                    else
+                        sbMessage.AppendLine($" 【扫描结果】：文件夹不存在 ({rootPath})");
+
+                    sbMessage.AppendLine(@"-------------------- 文件扫描结束 --------------------");
+                    sbMessage.AppendLine();
+
+                    showMessage(sbMessage.ToString(), Color.Black);
+                    #endregion
+
+                    runStart = DateTime.Now;
                 }
-                sbMessage.AppendLine(@" 文件夹不存在 ");
-
-                Thread.Sleep(1000 * 5);
+                Thread.Sleep(1000);
             }
         }
-        private void GetFiles(FileScanningRule rule, ref List<string> FileScanResult)
+        public void GetFiles(FileScanningRule rule, ref List<string> FileScanResult)
         {
             var dirInfo = new DirectoryInfo(rule.PathDirectory);
             //文件在规定的无条件搜索深度范围内 不检查文件夹的创建时间和写入时间
@@ -126,7 +207,7 @@ namespace ant.handle.files.scanning
 
                 #region 下级目录文件查找
                 var listDirectory = new List<string>();
-                if (rule.DirectoryDeepCurrent <= rule.DirectoryDeepCheck)
+                if (rule.DirectoryDeepCurrent < rule.DirectoryDeepCheck)
                 {
                     string[] directories;
                     foreach (var FilterDirectoryName in rule.FilterDirectoryNames)
@@ -172,8 +253,7 @@ namespace ant.handle.files.scanning
             }
         }
 
-
-
+        [Serializable]
         public class FileScanningRule
         {
             public FileScanningRule(string filterDirectoryNames, string fileNameFilter, string filterDirectoryNamesExclude = "", string fileNameFilterExclude = "")
@@ -275,5 +355,9 @@ namespace ant.handle.files.scanning
             return (T)retval;
         }
 
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            flaThreadServiceScanFiles = false;
+        }
     }
 }
