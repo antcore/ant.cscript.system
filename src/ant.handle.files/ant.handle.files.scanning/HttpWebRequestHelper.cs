@@ -8,7 +8,17 @@ using System.Text;
 
 namespace ant.handle.files.scanning
 {
-   
+
+    /*
+     
+ NameValueCollection data = new NameValueCollection();
+data.Add("name", "木子屋");
+data.Add("url", "http://www.mzwu.com/");
+Console.WriteLine(HttpHelper.HttpUploadFile("http://localhost/Test", new string[] { @"E:\Index.htm", @"E:\test.rar" }, data));
+         
+         */
+
+
     public static class HttpWebRequestHelper
     {
         /// <summary>
