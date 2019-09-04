@@ -55,7 +55,7 @@ Console.WriteLine(HttpHelper.HttpUploadFile("http://localhost/Test", new string[
         /// <returns></returns>
         public static string HttpUploadFile(string url, string[] files, NameValueCollection data)
         {
-            return HttpUploadFile(url, files, data, DEFAULTENCODE);
+            return HttpUploadFile(url, files, data, Encoding.UTF8);
         }
 
         /// <summary>
