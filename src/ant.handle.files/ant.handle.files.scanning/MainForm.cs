@@ -5,6 +5,8 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -28,39 +30,38 @@ namespace ant.handle.files.scanning
             string rootPath = string.Empty;
 
             rootPath = @"C:\00Files\00testfiles";
+            // 过滤目录
+            var filterDirectoryNames = "*";
+            // 过滤文件夹
+            var fileNameFilter = "*.txt";
+            // 检查文件开始时间
+            var CheckFileStartDateTime = DateTime.Parse("2019-09-03");
+            // 检查文件夹深度
+            var DirectoryDeepCheck = 3;
+            var DirectoryDeepCurrent = 1;
 
             StringBuilder sbMessage = new StringBuilder();
-            List<string> files = new List<string>();
             while (true)
             {
-                if (System.IO.Directory.Exists(rootPath))
+                if (Directory.Exists(rootPath))
                 {
-                    var fileNameFilter = "*.txt";
-                    // 检查文件开始时间
-                    DateTime CheckFileStartDateTime = DateTime.Parse("2019-09-03");
-                    // 检查文件夹深度
-                    int DirectoryDeepCheck = 3;
-                    int DirectoryDeepCurrent = 1;
-
-                    var rule = new FileScanningRule("*",fileNameFilter);
+                    var rule = new FileScanningRule(filterDirectoryNames, fileNameFilter);
                     rule.PathDirectory = rootPath;
                     rule.DirectoryDeepCheck = DirectoryDeepCheck;
                     rule.DirectoryDeepCurrent = DirectoryDeepCurrent;
+                    rule.CheckFileStartDateTime = CheckFileStartDateTime;
 
-
-
-                    GetFiles(rule);
-
-                    //GetFiles(rootPath, CheckFileStartDateTime, CheckDirectoryDeep, CurrentDirectoryDeep, ref files);
+                    List<string> ResultFileScan = new List<string>();
+                    GetFiles(rule, ref ResultFileScan);
                 }
                 sbMessage.AppendLine(@" 文件夹不存在 ");
 
-                System.Threading.Thread.Sleep(1000 * 5);
+                Thread.Sleep(1000 * 5);
             }
         }
-        private void GetFiles(FileScanningRule rule)
+        private void GetFiles(FileScanningRule rule, ref List<string> FileScanResult)
         {
-            var dirInfo = new System.IO.DirectoryInfo(rule.PathDirectory);
+            var dirInfo = new DirectoryInfo(rule.PathDirectory);
             //文件在规定的无条件搜索深度范围内 不检查文件夹的创建时间和写入时间
             //文件夹上次写入时间大于上次检查时间  认为文件夹下的文件有更新
             //文件夹创建时间大于置顶的检查时间  认为文件夹需要检查
@@ -71,7 +72,7 @@ namespace ant.handle.files.scanning
                 string[] files;
                 foreach (var FilterFileName in rule.FilterFileNames)
                 {
-                    files = Directory.GetFiles(rule.PathDirectory, FilterFileName, System.IO.SearchOption.TopDirectoryOnly);
+                    files = Directory.GetFiles(rule.PathDirectory, FilterFileName, SearchOption.TopDirectoryOnly);
                     if (null != files && files.Length > 0)
                         listFiles.AddRange(files);
                 }
@@ -81,7 +82,7 @@ namespace ant.handle.files.scanning
                     var listFilesExclude = new List<string>();
                     foreach (var FilterFileName in rule.FilterFileNamesExclude)
                     {
-                        files = Directory.GetFiles(rule.PathDirectory, FilterFileName, System.IO.SearchOption.TopDirectoryOnly);
+                        files = Directory.GetFiles(rule.PathDirectory, FilterFileName, SearchOption.TopDirectoryOnly);
                         if (null != files && files.Length > 0)
                             listFilesExclude.AddRange(files);
                     }
@@ -98,11 +99,13 @@ namespace ant.handle.files.scanning
                     FileInfo info;
                     foreach (var filePath in listFiles)
                     {
+                        //特殊文件处理
                         if (filePath.StartsWith("~$") || filePath.StartsWith("$"))
                             continue;
+
                         if (File.Exists(filePath))
                         {
-                            info = new System.IO.FileInfo(filePath);
+                            info = new FileInfo(filePath);
                             //检索的起始时间 < 更新时间 创建时间 
                             if (info.CreationTime < rule.CheckFileStartDateTime && info.LastWriteTime < rule.CheckFileStartDateTime)
                                 continue;
@@ -113,53 +116,68 @@ namespace ant.handle.files.scanning
                             //归档状态为 A 则采集  N 则不采集
                             if (info.Attributes == FileAttributes.Archive)
                             {
-                                if (rule.ResultFileScan.Contains(filePath))
-                                {
-                                    rule.ResultFileScan.Add(filePath);
-                                    //标记文件已经被采集
-                                    info.Attributes = FileAttributes.Normal;
-                                }
+                                FileScanResult.Add(filePath);
+                                //标记文件已经被采集
+                                info.Attributes = FileAttributes.Normal;
                             }
                         }
                     }
                 }
 
-                string[] directories;
-                string[] directoriesExclude = new string[0];
-                if (searchDeep <= _searchRule.directorySearchDeep)
+                #region 下级目录文件查找
+                var listDirectory = new List<string>();
+                if (rule.DirectoryDeepCurrent <= rule.DirectoryDeepCheck)
                 {
-                    directories = Directory.GetDirectories(rule.PathDirectory, _searchRule.directoryFilter, System.IO.SearchOption.TopDirectoryOnly);
-                    //需要排除的文件夹
-                    if (!string.IsNullOrWhiteSpace(_searchRule.directoryExcludeFilter))
-                        directoriesExclude = Directory.GetDirectories(path, _searchRule.directoryExcludeFilter, System.IO.SearchOption.TopDirectoryOnly);
-
-                    var items = directories.Intersect(directoriesExclude);//交集算出需要排出的文件
-                    directories = directories.Except(items).ToArray();//差集算出目标文件  需要提交的文件
+                    string[] directories;
+                    foreach (var FilterDirectoryName in rule.FilterDirectoryNames)
+                    {
+                        directories = Directory.GetDirectories(rule.PathDirectory, FilterDirectoryName, SearchOption.TopDirectoryOnly);
+                        if (null != directories && directories.Length > 0)
+                            listDirectory.AddRange(directories);
+                    }
+                    if (listDirectory.Count > 0 && rule.FilterDirectoryNamesExclude.Count > 0)
+                    {
+                        var listDirectoryExclude = new List<string>();
+                        string[] directoriesExclude;
+                        foreach (var FilterDirectoryName in rule.FilterDirectoryNamesExclude)
+                        {
+                            directoriesExclude = Directory.GetDirectories(rule.PathDirectory, FilterDirectoryName, SearchOption.TopDirectoryOnly);
+                            if (null != directoriesExclude && directoriesExclude.Length > 0)
+                                listDirectoryExclude.AddRange(directoriesExclude);
+                        }
+                        if (listDirectoryExclude.Count > 0)
+                        {
+                            //交集算出需要排出的文件夹
+                            var items = listDirectory.Intersect(listDirectoryExclude).ToList();
+                            //差集算出目标文件夹
+                            listDirectory = listDirectory.Except(items).ToList();
+                        }
+                    }
                 }
-                else
+                if (listDirectory.Count > 0)
                 {
-                    //搜索深度已经大于目标深度，则不再继续搜索
-                    return;
+                    // 存在下一级目录 继续寻找下级目录中的文件
+                    foreach (var directory in listDirectory)
+                    {
+                        var newRule = DeepCopyByBin(rule);
+
+                        ++newRule.DirectoryDeepCurrent;
+                        newRule.PathDirectory = directory;
+
+                        // 递归查找
+                        GetFiles(newRule, ref FileScanResult);
+                    }
                 }
-
-                searchDeep++;//搜索深度增加
-
-                foreach (var dir in directories)
-                {
-                    getFiles(dir, pathCheckTimeLimit, searchDeep, ref files);
-                }
-
-
-
+                #endregion
             }
         }
 
 
+
         public class FileScanningRule
         {
-            public FileScanningRule(string filterDirectoryNames, string fileNameFilter,  string filterDirectoryNamesExclude = "", string fileNameFilterExclude = "")
+            public FileScanningRule(string filterDirectoryNames, string fileNameFilter, string filterDirectoryNamesExclude = "", string fileNameFilterExclude = "")
             {
-
                 if (string.IsNullOrEmpty(filterDirectoryNames))
                     FilterDirectoryNames = filterDirectoryNames.Split(',').ToList();
                 else
@@ -180,7 +198,9 @@ namespace ant.handle.files.scanning
                 else
                     FilterFileNamesExclude = new List<string>();
 
-                ResultFileScan = new List<string>();
+
+                CheckFileStartDateTime = DateTime.Now;
+
                 DirectoryDeepCheck = 3;
                 DirectoryDeepCurrent = 1;
             }
@@ -205,178 +225,7 @@ namespace ant.handle.files.scanning
             public List<string> FilterDirectoryNamesExclude { get; set; }
             public List<string> FilterFileNames { get; set; }
             public List<string> FilterFileNamesExclude { get; set; }
-
-            public List<string> ResultFileScan { get; set; }
         }
-
-
-
-        private void getNewFiles(string path)
-        {
-            _Files.Clear();
-            DateTime beginTime = _searchRule.firstSearchTime;
-
-            getFiles(path, beginTime, 1, ref _Files);
-
-            //检测到的文件变更放入到文件队列
-            while (_FilesHaschangedList.Count > 0)
-            {
-                if (!_Files.Contains(_FilesHaschangedList[0]))
-                    _Files.Add(_FilesHaschangedList[0]);
-                _FilesHaschangedList.RemoveAt(0);
-            }
-
-            //移除非正常文件
-            for (int i = 0; i < _Files.Count; i++)
-            {
-                if (_Files[i].StartsWith("~$") || _Files[i].StartsWith("$"))
-                {
-                    _Files.RemoveAt(i);
-                    i--;
-                }
-            }
-
-            if (_Files.Count > 0)
-            {
-                string msg = "发现文件:" + _Files.Count;
-                if (!daq.tools.Sys.WindowsInfo.IsCnWindows())
-                    msg = "find files:" + _Files.Count;
-                //appendOnReciveMessage(TraceEventType.Information, "find files:" + _Files.Count);
-                appendOnReciveMessage(TraceEventType.Information, msg);
-                appendOnFindNewFile(_Files.ToArray());
-            }
-        }
-
-        //List<string> _tempFiles = new List<string>(1000);
-        /// <summary>
-        /// 获取文件
-        /// </summary>
-        /// <param name="path"></param>
-        /// <param name="files"></param>
-        //private void GetFiles(string PathDirectory, DateTime CheckFileStartDateTime, int CheckDirectoryDeep, int CurrentDirectoryDeep, ref List<string> files)
-        //{
-        //    var dirInfo = new System.IO.DirectoryInfo(PathDirectory);
-        //    //文件在规定的无条件搜索深度范围内 不检查文件夹的创建时间和写入时间
-        //    //文件夹上次写入时间大于上次检查时间  认为文件夹下的文件有更新
-        //    //文件夹创建时间大于置顶的检查时间  认为文件夹需要检查
-        //    if (CurrentDirectoryDeep <= CheckDirectoryDeep || CheckFileStartDateTime < dirInfo.CreationTime)
-        //    {
-        //        //应包含的文件
-        //        string[] filters = _searchRule.fileNameFilter.Split(',');
-        //        string[] fs = new string[0];
-
-        //        _tempFiles.Clear();
-        //        foreach (var value in filters)
-        //        {
-        //            fs = System.IO.Directory.GetFiles(PathDirectory, _searchRule.fileNameFilter, System.IO.SearchOption.TopDirectoryOnly);
-        //            _tempFiles.AddRange(fs);
-        //        }
-        //        fs = _tempFiles.Distinct().ToArray();
-        //        //string[] fs = System.IO.Directory.GetFiles(path, _searchRule.fileNameFilter, System.IO.SearchOption.TopDirectoryOnly);
-
-        //        //应排除的文件
-        //        string[] fsExclude = new string[0];
-        //        if (!string.IsNullOrWhiteSpace(_searchRule.fileNameExcludeFilter))
-        //        {
-        //            filters = _searchRule.fileNameExcludeFilter.Split(',');
-
-        //            _tempFiles.Clear();
-        //            foreach (var value in filters)
-        //            {
-        //                fsExclude = System.IO.Directory.GetFiles(path, value, System.IO.SearchOption.TopDirectoryOnly);
-
-        //                _tempFiles.AddRange(fsExclude);
-        //            }
-        //            fsExclude = _tempFiles.Distinct().ToArray();
-        //            // fsExclude = System.IO.Directory.GetFiles(path, _searchRule.fileNameExcludeFilter, System.IO.SearchOption.TopDirectoryOnly);
-        //        }
-
-        //        if (fs.Length > 0)
-        //        {
-        //            var items = fs.Intersect(fsExclude).ToList();//交集算出需要排出的文件
-        //            var distFiles = fs.Except(items).ToList();//差集算出目标文件  需要提交的文件
-
-        //            foreach (var file in distFiles)
-        //            {
-        //                var info = new System.IO.FileInfo(file);
-        //                //如果更新时间和创建时间都小于 检索的起始时间 则忽略
-        //                if (info.CreationTime < pathCheckTimeLimit && info.LastWriteTime < pathCheckTimeLimit) continue;
-
-
-        //                //判断归档条件  创建 后多少秒钟 才开始采集
-        //                if (_searchRule.doArchiveEventType.ToLower() == "create")
-        //                {
-        //                    if (info.CreationTime.AddSeconds(_searchRule.timeNumOfDoArchiveAfterEvent) > DateTime.Now) continue;
-        //                }
-        //                else if (_searchRule.doArchiveEventType.ToLower() == "update")//更新后多少秒钟才开始采集
-        //                {
-        //                    if (info.LastWriteTime.AddSeconds(_searchRule.timeNumOfDoArchiveAfterEvent) > DateTime.Now) continue;
-        //                }
-
-        //                //归档状态为 A 则采集  N 则不采集
-        //                if (info.Attributes == FileAttributes.Archive)
-        //                {
-        //                    if (!files.Contains(file))
-        //                    {
-        //                        files.Add(file);
-        //                        info.Attributes = FileAttributes.Normal;//标记文件已经被采集
-        //                    }
-        //                }
-
-
-        //                //删除满足条件的文件
-        //                //归档后n秒删除
-        //                //创建后n秒删除
-        //                if (!string.IsNullOrWhiteSpace(_searchRule.doDeleteEventType))
-        //                {
-        //                    if (_searchRule.doDeleteEventType.ToLower() == "after archived" && info.Attributes == FileAttributes.Normal)
-        //                    {
-        //                        if (info.CreationTime.AddSeconds(_searchRule.timeNumOfDoDeleteAfterEvent) < DateTime.Now)
-        //                        {
-        //                            //删除文件
-        //                            deleteFile(file);
-        //                        }
-        //                    }
-        //                    else if (_searchRule.doDeleteEventType.ToLower() == "after created")
-        //                    {
-        //                        if (info.LastWriteTime.AddSeconds(_searchRule.timeNumOfDoDeleteAfterEvent) < DateTime.Now)
-        //                        {
-        //                            //删除文件
-        //                            deleteFile(file);
-        //                        }
-        //                    }
-        //                    else if (_searchRule.doDeleteEventType.ToLower() == "none") { }
-        //                }
-        //            }
-        //        }
-
-        //        string[] directories = new string[0];
-        //        string[] directoriesExclude = new string[0];
-        //        if (searchDeep <= _searchRule.directorySearchDeep)
-        //        {
-        //            directories = System.IO.Directory.GetDirectories(path, _searchRule.directoryFilter, System.IO.SearchOption.TopDirectoryOnly);
-        //            //需要排除的文件夹
-        //            if (!string.IsNullOrWhiteSpace(_searchRule.directoryExcludeFilter))
-        //                directoriesExclude = System.IO.Directory.GetDirectories(path, _searchRule.directoryExcludeFilter, System.IO.SearchOption.TopDirectoryOnly);
-
-        //            var items = directories.Intersect(directoriesExclude);//交集算出需要排出的文件
-        //            directories = directories.Except(items).ToArray();//差集算出目标文件  需要提交的文件
-        //        }
-        //        else
-        //        {
-        //            //搜索深度已经大于目标深度，则不再继续搜索
-        //            return;
-        //        }
-
-        //        searchDeep++;//搜索深度增加
-
-        //        foreach (var dir in directories)
-        //        {
-        //            getFiles(dir, pathCheckTimeLimit, searchDeep, ref files);
-        //        }
-
-        //    }
-        //}
 
 
 
@@ -384,7 +233,47 @@ namespace ant.handle.files.scanning
         {
             new Thread(new ParameterizedThreadStart(action)).Start();
         }
+        /// <summary>
+        /// 深拷贝，通过序列化与反序列化实现
+        /// </summary>
+        /// <typeparam name="T">深拷贝的类类型</typeparam>
+        /// <param name="obj">深拷贝的类对象</param>
+        /// <returns></returns>
+        public T DeepCopyByBin<T>(T obj)
+        {
+            object retval;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                BinaryFormatter bf = new BinaryFormatter();
+                //序列化成流
+                bf.Serialize(ms, obj);
+                ms.Seek(0, SeekOrigin.Begin);
+                //反序列化成对象
+                retval = bf.Deserialize(ms);
+                ms.Close();
+            }
+            return (T)retval;
+        }
+        /// <summary>
+        /// 深拷贝，通过反射实现
+        /// </summary>
+        /// <typeparam name="T">深拷贝的类类型</typeparam>
+        /// <param name="obj">深拷贝的类对象</param>
+        /// <returns></returns>
+        public T DeepCopyByReflect<T>(T obj)
+        {
+            //如果是字符串或值类型则直接返回
+            if (obj is string || obj.GetType().IsValueType) return obj;
 
+            object retval = Activator.CreateInstance(obj.GetType());
+            FieldInfo[] fields = obj.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+            foreach (FieldInfo field in fields)
+            {
+                try { field.SetValue(retval, DeepCopyByReflect(field.GetValue(obj))); }
+                catch { }
+            }
+            return (T)retval;
+        }
 
     }
 }
