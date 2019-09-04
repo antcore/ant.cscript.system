@@ -44,8 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DelayFileSystemWatcher.cs" />
     <Compile Include="FileScanHandle.cs" />
     <Compile Include="FileScanRule.cs" />
+    <Compile Include="FileWatchHandle.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

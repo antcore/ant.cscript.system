@@ -19,7 +19,6 @@ namespace ant.handle.files.scanning
         public MainForm()
         {
             InitializeComponent();
-
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -48,9 +47,52 @@ namespace ant.handle.files.scanning
 
         bool flaThreadServiceScanFiles = true;
 
+
+        private void FileWatch_EventGetFile(string fileFullPath)
+        {
+            
+
+            //sbMessage.AppendLine(fileFullPath);
+
+            //showMessage(sbMessage.ToString(), Color.Black);
+        }
+
+        private   void fileSystemWatcher_Changed(object sender, FileSystemEventArgs e)
+        {
+            StringBuilder sbMessage = new StringBuilder();
+            switch (e.ChangeType)
+            {
+                case WatcherChangeTypes.Created:
+                case WatcherChangeTypes.Changed:
+                case WatcherChangeTypes.Renamed:
+                default:
+                    sbMessage.AppendLine(e.FullPath);
+                    break;
+            }
+            showMessage(sbMessage.ToString(), Color.Black);
+        }
+
         void ServiceScanFiles()
         {
             string rootPath = string.Empty;
+
+            rootPath = @"C:\00Files\00testfiles";
+            rootPath = @"C:\Users\mr\Desktop\新建文件夹";
+
+            var fileNameFilter = "*.txt";
+
+            //var fileWatch = new FileWatchHandle(rootPath);
+
+            //fileWatch.EventGetFile += FileWatch_EventGetFile;
+            //fileWatch.Start();
+
+            var  s_DelayFileSystemWatcher = new DelayFileSystemWatcher(rootPath, fileNameFilter, fileSystemWatcher_Changed, 500);
+            
+
+
+            return;
+
+              rootPath = string.Empty;
 
             rootPath = @"C:\00Files\00testfiles";
             rootPath = @"C:\Users\mr\Desktop\新建文件夹";
@@ -59,7 +101,7 @@ namespace ant.handle.files.scanning
             // 过滤目录
             var filterDirectoryNames = "*";
             // 过滤文件夹
-            var fileNameFilter = "*.txt";
+              fileNameFilter = "*.txt";
             // 检查文件开始时间
             var CheckFileStartDateTime = DateTime.Parse("2019-09-03");
             // 检查文件夹深度
@@ -79,6 +121,7 @@ namespace ant.handle.files.scanning
             var handle = new FileScanHandle();
             while (flaThreadServiceScanFiles)
             {
+                //扫描周期内执行查找
                 if (runStart.AddSeconds(ScanIntervalSeconds) <= DateTime.Now)
                 {
                     #region 执行文件查找
@@ -144,9 +187,7 @@ namespace ant.handle.files.scanning
             }
         }
 
-
-
-
+     
         private void ThreadAction(Action<object> action)
         {
             new Thread(new ParameterizedThreadStart(action)).Start();
