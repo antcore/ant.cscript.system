@@ -31,6 +31,23 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Aspose.OCR">
+      <HintPath>..\..\ant.dependencies.components\Aspose.OCR.dll</HintPath>
+    </Reference>
+    <Reference Include="Aspose.Pdf">
+      <HintPath>..\..\ant.dependencies.components\Aspose.Pdf.dll</HintPath>
+    </Reference>
+    <Reference Include="Aspose.Words">
+      <HintPath>..\..\ant.dependencies.components\Aspose.Words.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp, Version=5.5.12.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ant.dependencies.components\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp.pdfa, Version=5.5.12.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ant.dependencies.components\itextsharp.pdfa.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -43,6 +60,11 @@
   <ItemGroup>
     <Compile Include="CsScriptHandleFileTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScriptRunFunc\ExchangeImageInfo.cs" />
+    <Compile Include="ScriptRunFunc\PdfHelper.cs" />
+    <Compile Include="ScriptRunFunc\PdfHelperPartial.cs" />
+    <Compile Include="ScriptRunFunc\PdfHelperPartial_DeletePDFEncrypt.cs" />
+    <Compile Include="ScriptRunFunc\PdfHelper_old.cs" />
     <Compile Include="ScriptRunFunc\StringExtends.cs" />
     <Compile Include="ScriptRunFunc\Txt_FileHandle.cs" />
   </ItemGroup>

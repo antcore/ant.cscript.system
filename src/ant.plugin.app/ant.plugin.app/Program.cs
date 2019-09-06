@@ -13,6 +13,8 @@ namespace ant.plugin.app
         [STAThread]
         static void Main()
         {
+            PluginManager.Instance.Install();
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
